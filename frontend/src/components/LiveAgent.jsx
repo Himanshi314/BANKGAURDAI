@@ -29,10 +29,39 @@ const TOOL_LABELS = {
   escalate_to_human: 'Human Escalation',
 }
 
+function describeAction(action) {
+  const { tool, input = {}, result = {} } = action
+  switch (tool) {
+    case 'verify_customer':
+      return result.verified
+        ? `Identity verified: ${result.customer_name} (a/c ****${input.account_last4})`
+        : `Verification failed for ****${input.account_last4} — no such account`
+    case 'block_card':
+      return `${input.card_type || 'debit'} card blocked · Ref ${result.reference_no || '—'}`
+    case 'freeze_account':
+      return `Account frozen — all transactions suspended · Ref ${result.reference_no || '—'}`
+    case 'flag_transaction':
+      return `Fraud dispute raised${input.amount ? ` for ₹${Number(input.amount).toLocaleString('en-IN')}` : ''} · ${result.dispute_id || ''}`
+    case 'reset_pin':
+      return `Green PIN OTP sent to registered mobile for card ****${input.card_last4}`
+    case 'raise_reversal':
+      return `Reversal raised for ₹${Number(input.amount || 0).toLocaleString('en-IN')} · ${result.reversal_id || ''}`
+    case 'unlock_yono':
+      return 'YONO app unlocked — customer can log in again'
+    case 'send_sms_confirmation':
+      return `SMS confirmation sent to ${input.phone}`
+    case 'escalate_to_human':
+      return `Escalated to human officer (${input.priority}) · Ticket ${result.ticket_id || ''}`
+    default:
+      return null
+  }
+}
+
 function ActionCard({ action }) {
   const [expanded, setExpanded] = useState(false)
   const colorClass = TOOL_COLORS[action.tool] || 'border-white/20 bg-white/5 text-white/70'
   const success = action.result?.success !== false && action.result?.verified !== false
+  const summary = describeAction(action)
 
   return (
     <motion.div
@@ -55,6 +84,9 @@ function ActionCard({ action }) {
           : <XCircle className="w-4 h-4 text-red-400 ml-auto flex-shrink-0" />}
         <ChevronDown className={`w-3.5 h-3.5 text-white/40 flex-shrink-0 transition-transform ${expanded ? 'rotate-180' : ''}`} />
       </div>
+      {summary && (
+        <div className="mt-1.5 pl-5 text-[11px] font-sans text-white/60 leading-snug">{summary}</div>
+      )}
       <AnimatePresence>
         {expanded && (
           <motion.div
@@ -156,12 +188,44 @@ export default function LiveAgent() {
             </div>
 
             {AGENT_ID ? (
-              <div className="flex-1 flex flex-col items-center justify-center min-h-[320px]">
-                <elevenlabs-convai agent-id={AGENT_ID}></elevenlabs-convai>
-                <div className="mt-6 text-center space-y-1">
-                  <p className="text-white/60 text-sm">Try saying:</p>
-                  <p className="text-white/40 text-sm italic">"Maine apna ATM card kho diya hai!"</p>
-                  <p className="text-white/30 text-xs mt-2">Demo accounts: 4521 · 7832 · 3301</p>
+              <div className="flex-1 flex flex-col min-h-[320px]">
+                <div className="flex justify-center py-4">
+                  <elevenlabs-convai agent-id={AGENT_ID}></elevenlabs-convai>
+                </div>
+
+                {/* Judge cheat-sheet: demo accounts */}
+                <div className="mt-4 bg-navy-900/60 border border-white/10 rounded-xl p-4">
+                  <div className="text-[11px] text-white/40 font-semibold uppercase tracking-wider mb-2">
+                    Demo Accounts (simulated SBI database)
+                  </div>
+                  <div className="grid grid-cols-3 gap-2 text-center">
+                    {[
+                      { last4: '4521', name: 'Rajesh Kumar' },
+                      { last4: '7832', name: 'Priya Sharma' },
+                      { last4: '3301', name: 'Amit Patel' },
+                    ].map((acc) => (
+                      <div key={acc.last4} className="bg-white/5 border border-white/10 rounded-lg py-2">
+                        <div className="font-mono font-bold text-sbi-green text-lg">{acc.last4}</div>
+                        <div className="text-white/50 text-[11px]">{acc.name}</div>
+                      </div>
+                    ))}
+                  </div>
+                  <div className="text-white/30 text-[11px] mt-2 text-center">
+                    When the agent asks for your account's last 4 digits, use any of these.
+                  </div>
+                </div>
+
+                {/* Judge cheat-sheet: things to say */}
+                <div className="mt-3 bg-navy-900/60 border border-white/10 rounded-xl p-4">
+                  <div className="text-[11px] text-white/40 font-semibold uppercase tracking-wider mb-2">
+                    Try Saying (Hindi or English)
+                  </div>
+                  <ul className="space-y-1.5 text-sm text-white/60">
+                    <li>🪪 "Maine apna ATM card kho diya hai!" <span className="text-white/30">→ card block</span></li>
+                    <li>🚨 "Someone hacked my account, freeze it!" <span className="text-white/30">→ account freeze</span></li>
+                    <li>💸 "There's a ₹15,000 transaction I didn't make" <span className="text-white/30">→ fraud dispute</span></li>
+                    <li>🔢 "I forgot my ATM PIN" <span className="text-white/30">→ PIN reset</span></li>
+                  </ul>
                 </div>
               </div>
             ) : (
