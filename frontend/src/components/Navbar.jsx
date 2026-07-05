@@ -14,7 +14,6 @@ export default function Navbar() {
 
   const links = [
     { label: 'Talk Live', href: '#live' },
-    { label: 'Live Demo', href: '#demo' },
     { label: 'How It Works', href: '#how-it-works' },
     { label: 'Use Cases', href: '#use-cases' },
     { label: 'Tech Stack', href: '#tech-stack' },
@@ -62,7 +61,7 @@ export default function Navbar() {
           {/* CTA */}
           <div className="hidden md:flex items-center gap-3">
             <a
-              href="#demo"
+              href="#live"
               className="bg-sbi-green hover:bg-sbi-green-dark text-white font-semibold text-sm px-5 py-2 rounded-full transition-all duration-200 glow-green hover:glow-green-lg"
             >
               Try Demo
@@ -101,7 +100,7 @@ export default function Navbar() {
                 </a>
               ))}
               <a
-                href="#demo"
+                href="#live"
                 onClick={() => setMenuOpen(false)}
                 className="bg-sbi-green text-white font-semibold text-sm px-5 py-2.5 rounded-full text-center mt-2"
               >

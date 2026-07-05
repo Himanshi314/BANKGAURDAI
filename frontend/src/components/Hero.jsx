@@ -65,7 +65,7 @@ export default function Hero() {
             {/* CTAs */}
             <div className="flex flex-wrap gap-4 mb-12">
               <a
-                href="#demo"
+                href="#live"
                 className="flex items-center gap-2 bg-sbi-green hover:bg-sbi-green-dark text-white font-bold px-7 py-3.5 rounded-full transition-all duration-200 glow-green text-base group"
               >
                 Try Live Demo
