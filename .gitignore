@@ -1,0 +1,8 @@
+node_modules/
+dist/
+.env
+__pycache__/
+*.pyc
+cloudflared.exe
+ngrok.exe
+.DS_Store
