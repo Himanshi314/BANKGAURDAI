@@ -200,18 +200,19 @@ export default function LiveAgent() {
                   </div>
                   <div className="grid grid-cols-3 gap-2 text-center">
                     {[
-                      { last4: '4521', name: 'Rajesh Kumar' },
-                      { last4: '7832', name: 'Priya Sharma' },
-                      { last4: '3301', name: 'Amit Patel' },
+                      { last4: '4521', name: 'Rajesh Kumar', card: '6702' },
+                      { last4: '7832', name: 'Priya Sharma', card: '9934' },
+                      { last4: '3301', name: 'Amit Patel', card: '1123' },
                     ].map((acc) => (
                       <div key={acc.last4} className="bg-white/5 border border-white/10 rounded-lg py-2">
                         <div className="font-mono font-bold text-sbi-green text-lg">{acc.last4}</div>
                         <div className="text-white/50 text-[11px]">{acc.name}</div>
+                        <div className="text-white/30 text-[10px] font-mono mt-0.5">card {acc.card}</div>
                       </div>
                     ))}
                   </div>
                   <div className="text-white/30 text-[11px] mt-2 text-center">
-                    When the agent asks for your account's last 4 digits, use any of these.
+                    Account digits verify identity · card digits are for PIN reset.
                   </div>
                 </div>
 
